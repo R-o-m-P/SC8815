@@ -508,140 +508,140 @@ void SC8815_PGATE_Disable(void)
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0x7F);
 }
 /****************************************
-* @brief    打开 GPO 引脚功能, 输出低电平
+* @brief    Open GPO pin function, output low level
 *****************************************/
 void SC8815_GPO_Enable(void)
 {
-    //设置 GPO_CTRL 位
+    //Set the GPO_CTRL bit
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) | 0x40);
 }
 /****************************************
-* @brief    关闭 GPO 引脚功能, 输出高阻状态
+* @brief    Disable GPO pin function, output high impedance state
 *****************************************/
 void SC8815_GPO_Disable(void)
 {
-    //清除 GPO_CTRL 位
+    //Clear the GPO_CTRL bit
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0xBF);
 }
 /****************************************
-* @brief    打开 ADC 扫描, 此时可以读取 ADC 数据
+* @brief    Turn on ADC scan, you can read ADC data at this time
 *****************************************/
 void SC8815_ADC_Enable(void)
 {
-    //设置 AD_START 位
+    //Set AD_START bit
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) | 0x20);
 }
 /****************************************
-* @brief    关闭 ADC 扫描, 节约 1-2mA 的耗电
+* @brief    Turn off ADC scanning, saving 1-2mA of power consumption
 *****************************************/
 void SC8815_ADC_Disable(void)
 {
-    //清除 AD_START 位
+    //Clear AD_START bit
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0xDF);
 }
 /****************************************
-* @brief    打开 OTG 反向放电模式中的 VBUS 和 VBAT 短路保护功能
+* @brief    Turn on the VBUS and VBAT short-circuit protection function in OTG reverse discharge mode
 *****************************************/
 void SC8815_SFB_Enable(void)
 {
-    //清除 DIS_ShortFoldBack 位
+    //Clear the DIS_ShortFoldBack bit
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0xFB);
 }
 /****************************************
-* @brief    关闭 OTG 反向放电模式中的 VBUS 和 VBAT 短路保护功能
+* @brief    Disable the VBUS and VBAT short-circuit protection function in OTG reverse discharge mode
 *****************************************/
 void SC8815_SFB_Disable(void)
 {
-    //设置 DIS_ShortFoldBack 位
+    //Set DIS_ShortFoldBack bit
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) | 0x04);
 }
 /****************************************
-* @brief    打开 OTG 模式中轻载条件下的 PFM 模式
+* @brief    Enable PFM mode under light load conditions in OTG mode
 *****************************************/
 void SC8815_PFM_Enable(void)
 {
-    //设置 EN_PFM 位
+    //Set the EN_PFM bit
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) | 0x01);
 }
 /****************************************
-* @brief    关闭 OTG 模式中轻载条件下的 PFM 模式
+* @brief    Turn off PFM mode under light load conditions in OTG mode
 *****************************************/
 void SC8815_PFM_Disable(void)
 {
-    //清除 EN_PFM 位
+    //Clear the EN_PFM bit
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0xFE);
 }
 
 /****************************************
-* @brief    检查 OTG 是否处于打开状态
-* @return   OTG 功能的状态 (1b 或 0b)
+* @brief check if OTG is on
+* @return OTG function status (1b or 0b)
 *****************************************/
 uint8_t SC8815_OTG_IsEnable(void)
 {
-    //返回 OTG 的状态
+    //Return OTG status
     return (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) & 0x80) ? 1 : 0;
 }
 /****************************************
-* @brief    获取 VINREG 的增益
-* @return   VINREG 的增益 (40 或 100)
+* @brief gets the gain of VINREG
+* @return VINREG gain (40 or 100)
 *****************************************/
 uint8_t SC8815_VINREG_GetRatio(void)
 {
-    //返回 VINREG 的增益
+    //Return the gain of VINREG
     return (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) & 0x10) ? 40 : 100;
 }
 /****************************************
-* @brief    检查 OTG 模式中 OVP(过压保护) 功能是否处于打开状态
-* @return   OVP 功能的状态 (1b 或 0b)
+* @brief Check whether the OVP (overvoltage protection) function in OTG mode is on
+* @return OVP function status (1b or 0b)
 *****************************************/
 uint8_t SC8815_OVP_IsEnable(void)
 {
-    //返回 OVP 的状态
+    //Return the status of OVP
     return (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL1_SET) & 0x04) ? 0 : 1;
 }
 /****************************************
-* @brief    检查 PGATE 引脚功能是否处于打开状态
-* @return   PGATE 引脚功能的状态 (1b 或 0b)
+* @brief check whether the PGATE pin function is on
+* @return PGATE pin function status (1b or 0b)
 *****************************************/
 uint8_t SC8815_PGATE_IsEnable(void)
 {
-    //返回 PGATE 的状态
+    //Return the status of PGATE
     return (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0x80) ? 1 : 0;
 }
 /****************************************
-* @brief    检查 GPO 引脚功能是否处于打开状态
-* @return   GPO 引脚功能的状态 (1b 或 0b)
+* @brief check whether the GPO pin function is on
+* @return GPO pin function status (1b or 0b)
 *****************************************/
 uint8_t SC8815_GPO_IsEnable(void)
 {
-    //返回 GPO 的状态
+    //Returns the status of the GPO
     return (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0x40) ? 1 : 0;
 }
 /****************************************
-* @brief    检查 ADC 扫描是否处于打开状态
-* @return   ADC 扫描的状态 (1b 或 0b)
+* @brief check if ADC scan is on
+* @return ADC scan status (1b or 0b)
 *****************************************/
 uint8_t SC8815_ADC_IsEnable(void)
 {
-    //返回 ADC 的状态
+    //Return the status of the ADC
     return (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0x20) ? 1 : 0;
 }
 /****************************************
-* @brief    检查 OTG 模式中 短路保护 功能是否处于打开状态
-* @return   短路保护功能的状态 (1b 或 0b)
+* @brief Check whether the short-circuit protection function is on in OTG mode
+* @return The status of the short-circuit protection function (1b or 0b)
 *****************************************/
 uint8_t SC8815_SFB_IsEnable(void)
 {
-    //返回 短路保护功能 的状态
+    //Return to the state of the short-circuit protection function
     return (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0x04) ? 0 : 1;
 }
 /****************************************
-* @brief    检查 OTG 模式中的 PFM 模式是否处于打开状态
-* @return   PFM 模式的状态 (1b 或 0b)
+* @brief check if the PFM mode in OTG mode is on
+* @return PFM mode status (1b or 0b)
 *****************************************/
 uint8_t SC8815_PFM_IsEnable(void)
 {
-    //返回 PFM 的状态
+    //Return the status of PFM
     return (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0x01) ? 1 : 0;
 }
 
