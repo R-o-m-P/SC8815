@@ -1,5 +1,4 @@
 ## SC8815 General firmware library, which can realize all functions of SC8815.
-
     The library is written in the style of the STM32 firmware library. It has passed the preliminary test and can successfully initialize the SC8815 and set the parameters, but the functions of all functions are not guaranteed.
 
 #### 1. The library will provide the following useful functions:
@@ -32,7 +31,6 @@ If the VBUS voltage feedback mode during OTG is the feedback of the external vol
 When setting the OTG output voltage, the library will automatically calculate the SC8815 register parameters according to the feedback method used. You only need to set the hardware parameter macro.
 
 #### 4. After completing a few simple configurations, you can start using this library.
-
     It is recommended to modify the initialization parameters you need from the demo function, and then call the demo function to initialize.
 
 #### 5. Things needing attention:
