@@ -233,69 +233,66 @@ uint16_t SC8815_Read_VBUS_Current(void)
     return ((uint16_t)(50 * RATIO_Value) * (4 * tmp1 + tmp2 + 1)) / (3 * SCHW_VBUS_RSHUNT);
 }
 /****************************************
-* @brief    读取 SC8815 内置 ADC 对电池电压的测量结果
-* @return   单位为 mV 的电池电压
+* @brief reads the measurement result of the battery voltage by the built-in ADC of SC8815
+* @return battery voltage in mV
 *****************************************/
 uint16_t SC8815_Read_BATT_Voltage(void)
 {
     uint8_t tmp1, tmp2;
     double RATIO_Value;
 
-    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x02) == 2) ? 5 : 12.5; //取得电池电压的比率
-    tmp1 = I2C_ReadRegByte(SC8815_ADDR, SCREG_VBAT_FB_VALUE);           //读取 ADC 值寄存器1
-    tmp2 = I2C_ReadRegByte(SC8815_ADDR, SCREG_VBAT_FB_VALUE2) >> 6;     //读取 ADC 值寄存器2
-
-    //返回电池电压值
+    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x02) == 2) ? 5 : 12.5; //Get the ratio of battery voltage
+    tmp1 = I2C_ReadRegByte(SC8815_ADDR, SCREG_VBAT_FB_VALUE);           //Read ADC value register 1
+    tmp2 = I2C_ReadRegByte(SC8815_ADDR, SCREG_VBAT_FB_VALUE2) >> 6;     //Read ADC value register 2
+    //Return battery voltage value
     return (uint16_t)((4 * tmp1 + tmp2 + 1) * RATIO_Value) * 2;
 }
 /****************************************
-* @brief    读取 SC8815 内置 ADC 对电池电流的测量结果
-* @return   单位为 mA 的电池电流 (SC8815 无电流方向区分)
+* @brief reads the measurement result of the battery current measured by the built-in ADC of the SC8815
+* @return battery current in mA (SC8815 has no current direction distinction)
 *****************************************/
 uint16_t SC8815_Read_BATT_Current(void)
 {
     uint8_t tmp1, tmp2;
     uint16_t RATIO_Value;
 
-    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x10) == 16) ? 12 : 6;  //取得 IBAT 的比率
-    tmp1 = I2C_ReadRegByte(SC8815_ADDR, SCREG_IBAT_VALUE);              //读取 ADC 值寄存器1
-    tmp2 = I2C_ReadRegByte(SC8815_ADDR, SCREG_IBAT_VALUE2) >> 6;        //读取 ADC 值寄存器2
+    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x10) == 16) ? 12 : 6;  //Get the IBAT ratio
+    tmp1 = I2C_ReadRegByte(SC8815_ADDR, SCREG_IBAT_VALUE);              //Read ADC value register 1
+    tmp2 = I2C_ReadRegByte(SC8815_ADDR, SCREG_IBAT_VALUE2) >> 6;        //Read ADC value register 2
 
-    //返回 IBAT 电流值
+    //Return IBAT current value
     return (uint16_t)((50 * RATIO_Value) * (4 * tmp1 + tmp2 + 1)) / (3 * SCHW_BATT_RSHUNT);
 }
 /****************************************
-* @brief    读取 SC8815 内置 ADC 对 ADIN_PIN 电压的测量结果
-* @return   单位为 mV 的 ADIN_PIN 电压
+* @brief reads the measurement result of the ADIN_PIN voltage by the built-in ADC of SC8815
+* @return ADIN_PIN voltage in mV
 *****************************************/
 uint16_t SC8815_Read_ADIN_Voltage(void)
 {
     uint8_t tmp1,tmp2;
 
-    tmp1 = I2C_ReadRegByte(SC8815_ADDR, SCREG_ADIN_VALUE);          //读取 ADC 值寄存器1
-    tmp2 = I2C_ReadRegByte(SC8815_ADDR, SCREG_ADIN_VALUE2) >> 6;    //读取 ADC 值寄存器2
-
-    //返回 ADIN_PIN 电压值
+    tmp1 = I2C_ReadRegByte(SC8815_ADDR, SCREG_ADIN_VALUE);          //Read ADC value register 1
+    tmp2 = I2C_ReadRegByte(SC8815_ADDR, SCREG_ADIN_VALUE2) >> 6;    //Read ADC value register 2
+    //Return ADIN_PIN voltage value
     return (uint16_t)(4 * tmp1 + tmp2 + 1) * 2;
 }
 
 /****************************************
-* @brief    设置 SC8815 在 OTG 反向输出时的输出电压
-* @param    NewVolt 新的单位为 mV 的输出电压设定值
-* @note     不得输入超出最大可设定值的电压值, 如最大输出 1024mV,  输入 1145mV 将导致计算结果溢出错误
+* @brief sets the output voltage of SC8815 when OTG output is enabled
+* @param NewVolt The new value in mV of the output voltage 
+* @note Do not input a voltage value that exceeds the maximum settable value. For example, the maximum output is 1024mV, inputting 1145mV will cause the calculation result to overflow error
 *****************************************/
 void SC8815_SetOutputVoltage(uint16_t NewVolt)
 {
     uint16_t tmp1,tmp2;
     double RATIO_Value;
 
-    //判断 VBUS 电压反馈的模式
+    //Determine the mode of VBUS voltage feedback
     if (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL1_SET) & 0x10)
     {
-        RATIO_Value = (double)SCHW_FB_RUP / SCHW_FB_RDOWM + 1.0;    //计算输出电压比率
-        tmp1 = (NewVolt / RATIO_Value) / 2;                         //计算对应的参考电压
-
-        //得到 VBUSREF 寄存器 2 的值
+        RATIO_Value = (double)SCHW_FB_RUP / SCHW_FB_RDOWM + 1.0;    //Calculate the output voltage ratio
+        tmp1 = (NewVolt / RATIO_Value) / 2;                         //Calculate the corresponding reference voltage
+        //Get the value of VBUSREF register 2
         for (tmp2 = 0; tmp2 < 3; tmp2++)
         {
             if (((tmp1 - tmp2 - 1) % 4) == 0)
@@ -304,19 +301,18 @@ void SC8815_SetOutputVoltage(uint16_t NewVolt)
             }
         }
 
-        //得到 VBUSREF 寄存器 1 的值
+        //Get the value of VBUSREF register 1
         tmp1 = (tmp1 - tmp2 - 1) / 4;
 
-        //写入到 SC8815 VBUSREF_E_SET 寄存器
+        //Write to SC8815 VBUSREF_E_SET register
         I2C_WriteRegByte(SC8815_ADDR, SCREG_VBUSREF_E_SET, (uint8_t)tmp1);
         I2C_WriteRegByte(SC8815_ADDR, SCREG_VBUSREF_E_SET2, (uint8_t)tmp2);
     }
     else
     {
         RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x01) == 1) ? 5 : 12.5; //取得 VBUS 电压的比率
-        tmp1 = NewVolt / RATIO_Value / 2;   //计算对应的参考电压
-
-        //得到 VBUSREF 寄存器 2 的值
+        tmp1 = NewVolt / RATIO_Value / 2;   //Calculate the corresponding reference voltage
+        //Get the value of VBUSREF register 2
         for (tmp2 = 0; tmp2 < 3; tmp2++)
         {
             if (((tmp1 - tmp2 - 1) % 4) == 0)
@@ -325,191 +321,190 @@ void SC8815_SetOutputVoltage(uint16_t NewVolt)
             }
         }
 
-        //得到 VBUSREF 寄存器 1 的值
+        //Get the value of VBUSREF register 1
         tmp1 = (tmp1 - tmp2 - 1) / 4;
 
-        //写入到 SC8815 VBUSREF_I_SET 寄存器
+        //Write to SC8815 VBUSREF_I_SET register
         I2C_WriteRegByte(SC8815_ADDR, SCREG_VBUSREF_I_SET, (uint8_t)tmp1);
         I2C_WriteRegByte(SC8815_ADDR, SCREG_VBUSREF_I_SET2, (uint8_t)tmp2);
     }
 }
 /****************************************
-* @brief    设置 SC8815 VBUS 路径上的限流值,双向通用
-* @param    NewILIM 新的单位为 mA 的输出限流设定值
-* @note     最小的限流值不应低于 300mA, 不得输入超出最大可设定值的电流值
+* @brief sets the current limit value on the SC8815 VBUS path, common in both directions
+* @param NewILIM The new unit is mA output current limit setting value
+* @note The minimum current limit value should not be lower than 300mA, and the current value that exceeds the maximum settable value must not be input
 *****************************************/
 void SC8815_SetBusCurrentLimit(uint16_t NewILIM)
 {
     uint8_t tmp;
     uint16_t RATIO_Value;
 
-    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x0C) == 4) ? 6 : 3;    //取得 IBUS 的比率
-    tmp = (16 * (NewILIM) * (SCHW_VBUS_RSHUNT)) / (625 * RATIO_Value) - 1;              //计算 LIM 设置值
-    I2C_WriteRegByte(SC8815_ADDR, SCREG_IBUS_LIM_SET, tmp);                             //写入到 SC8815 寄存器
+    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x0C) == 4) ? 6 : 3;    //Rate of obtaining IBUS
+    tmp = (16 * (NewILIM) * (SCHW_VBUS_RSHUNT)) / (625 * RATIO_Value) - 1;              //Calculate LIM settings
+    I2C_WriteRegByte(SC8815_ADDR, SCREG_IBUS_LIM_SET, tmp);                             //Write to SC8815 register
 }
 /****************************************
-* @brief    设置 SC8815 电池路径上的限流值,双向通用
-* @param    NewILIM 新的单位为 mA 的电池限流设定值
-* @note     最小的限流值不应低于 300mA, 不得输入超出最大可设定值的电流值
+* @brief sets the current limit value on the battery path of SC8815, universal in both directions
+* @param NewILIM The new battery current limit set value in mA
+* @note The minimum current limit value should not be lower than 300mA, and the current value that exceeds the maximum settable value must not be input
 *****************************************/
 void SC8815_SetBatteryCurrLimit(uint16_t NewILIM)
 {
     uint8_t tmp;
     uint16_t RATIO_Value;
 
-    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x10) == 16) ? 12 : 6; //取得 IBAT 的比率
-    tmp = (16 * (NewILIM) * (SCHW_VBUS_RSHUNT)) / (625 * RATIO_Value) - 1;             //计算 LIM 设置值
-    I2C_WriteRegByte(SC8815_ADDR, SCREG_IBAT_LIM_SET, tmp);                            //写入到 SC8815 寄存器
+    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x10) == 16) ? 12 : 6; //Get IBAT ratio
+    tmp = (16 * (NewILIM) * (SCHW_VBUS_RSHUNT)) / (625 * RATIO_Value) - 1;             //Calculate LIM settings
+    I2C_WriteRegByte(SC8815_ADDR, SCREG_IBAT_LIM_SET, tmp);                            //Write to SC8815 register
 }
 /****************************************
-* @brief    设置 SC8815 VINREG 电压值 (类似 MPPT)
-* @param    NewVolt 新的单位为 mV 的 VINREG 电压设定值
-* @note     不得输入超出最大可设定值的电压值
+* @brief set SC8815 VINREG voltage value (similar to MPPT)
+* @param NewVolt The new unit is mV VINREG voltage setting value
+* @note must not enter a voltage value that exceeds the maximum settable value
 *****************************************/
 void SC8815_VINREG_SetVoltage(uint16_t NewVolt)
 {
     uint16_t RATIO_Value;
-    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) & 0x10) == 16) ? 40 : 100;    //取得 VINREG 的比率
-    I2C_WriteRegByte(SC8815_ADDR, SCREG_VINREG_SET, (NewVolt / RATIO_Value) - 1);               //写入到 SC8815 寄存器
+    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) & 0x10) == 16) ? 40 : 100;    //Get the ratio of VINREG
+    I2C_WriteRegByte(SC8815_ADDR, SCREG_VINREG_SET, (NewVolt / RATIO_Value) - 1);               //Write to SC8815 register
 }
 
 /****************************************
-* @brief    获取 SC8815 在 OTG 反向输出时的输出电压设定值
-* @return   单位为 mV 的输出电压设定值
+* @brief gets the output voltage setting value of SC8815 in OTG reverse output
+* @return The output voltage setting value in mV
 *****************************************/
 uint16_t SC8815_GetOutputVoltage(void)
 {
     uint16_t tmp1, tmp2;
     double RATIO_Value;
 
-    //判断 VBUS 电压反馈的模式
+    //Determine the mode of VBUS voltage feedback
     if (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL1_SET) & 0x10)
     {
-        //读取 VBUSREF_E_SET 寄存器
+        //Read the VBUSREF_E_SET register
         tmp1 = I2C_ReadRegByte(SC8815_ADDR, SCREG_VBUSREF_E_SET);
         tmp2 = I2C_ReadRegByte(SC8815_ADDR, SCREG_VBUSREF_E_SET2);
 
-        //计算输出电压比率
+        //Calculate the output voltage ratio
         RATIO_Value = (double)SCHW_FB_RUP / SCHW_FB_RDOWM + 1.0;
     }
     else
     {
-        //读取 VBUSREF_E_SET 寄存器
+        //Read the VBUSREF_E_SET register
         tmp1 = I2C_ReadRegByte(SC8815_ADDR, SCREG_VBUSREF_E_SET);
         tmp2 = I2C_ReadRegByte(SC8815_ADDR, SCREG_VBUSREF_E_SET2);
 
-        //取得VBUS电压的比率
+        //Get the ratio of VBUS voltage
         RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x01) == 1) ? 5 : 12.5;
     }
 
-    //返回对应的输出电压
+    //Return the corresponding output voltage
     return (uint16_t)((4 * tmp1 + tmp2 + 1) * RATIO_Value) * 2;
 }
 /****************************************
-* @brief    获取 SC8815 VBUS 路径上的限流设定值
-* @return   单位为 mA 的 VBUS 路径限流设定值
+* @brief gets the current limit setting value on the SC8815 VBUS path
+* @return VBUS path current limit setting value in mA
 *****************************************/
 uint16_t SC8815_GetBusCurrentLimit(void)
 {
     uint8_t tmp;
     uint16_t RATIO_Value;
 
-    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x0C) == 4) ? 6 : 3; //取得 IBUS 的比率
-    tmp = I2C_ReadRegByte(SC8815_ADDR, SCREG_IBUS_LIM_SET);                          //取得 IBUS 限流寄存器值
-
-    //返回IBUS限流值
+    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x0C) == 4) ? 6 : 3; //Get IBUS ratio
+    tmp = I2C_ReadRegByte(SC8815_ADDR, SCREG_IBUS_LIM_SET);                          //Get the IBUS current limit register value
+    //Return IBUS current limit value
     return (uint16_t)((uint32_t)(625 * (RATIO_Value) * (tmp + 1)) / (16 * (SCHW_VBUS_RSHUNT)));
 }
 /****************************************
-* @brief    获取 SC8815 电池路径上的限流设定值
-* @return   单位为 mA 的电池路径限流设定值
+* @brief Get the current limit setting value on the battery path of SC8815
+* @return The battery path current limit setting value in mA
 *****************************************/
 uint16_t SC8815_GetBatteryCurrLimit(void)
 {
     uint8_t tmp;
     uint16_t RATIO_Value;
 
-    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x10) == 16) ? 12 : 6; //取得 IBAT 的比率
-    tmp = I2C_ReadRegByte(SC8815_ADDR, SCREG_IBAT_LIM_SET);                            //取得 IBAT 限流寄存器值
+    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x10) == 16) ? 12 : 6; //Get IBAT ratio
+    tmp = I2C_ReadRegByte(SC8815_ADDR, SCREG_IBAT_LIM_SET);                            //Get the IBAT current limit register value
 
-    //返回IBAT限流值
+    //Return IBAT current limit value
     return (uint16_t)((uint32_t)(625 * (RATIO_Value) * (tmp + 1)) / (16 * (SCHW_BATT_RSHUNT)));
 }
 /****************************************
-* @brief    获取 SC8815 VINREG 电压设定值
-* @return   单位为 mV 的 VINREG 电压设定值
+* @brief Get SC8815 VINREG voltage setting value
+* @return VINREG voltage setting value in mV
 *****************************************/
 uint16_t SC8815_VINREG_GetVoltage(void)
 {
     uint8_t tmp;
     uint16_t RATIO_Value;
-    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) & 0x10) == 16) ? 40 : 100; //取得 VINREG 的比率
-    tmp = I2C_ReadRegByte(SC8815_ADDR, SCREG_VINREG_SET);                                    //取得 VINREG 寄存器值
+    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) & 0x10) == 16) ? 40 : 100; //Get VINREG ratio
+    tmp = I2C_ReadRegByte(SC8815_ADDR, SCREG_VINREG_SET);                                    //Get the VINREG register value
     return tmp * RATIO_Value;
 }
 
 /****************************************
-* @brief    打开 OTG 反向放电模式
+* @brief   Turn on OTG reverse discharge mode
 *****************************************/
 void SC8815_OTG_Enable(void)
 {
-    //设置 EN_OTG 位
+    //Set EN_OTG bit
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL0_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) | 0x80);
 }
 /****************************************
-* @brief    关闭 OTG 反向放电模式, SC8815 将处于充电模式
+* @brief    Turn off OTG reverse discharge mode, SC8815 will be in charging mode
 *****************************************/
 void SC8815_OTG_Disable(void)
 {
-    //清除 EN_OTG 位
+    //Clear EN_OTG bit
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL0_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) & 0x7F);
 }
 /****************************************
-* @brief    设置 VINREG 的增益为 40x
+* @brief    Set the gain of VINREG to 40x
 *****************************************/
 void SC8815_VINREG_SetRatio_40x(void)
 {
-    //设置 VINREG_RATIO 位
+    //Set VINREG_RATIO bit
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL0_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) | 0x10);
 }
 /****************************************
-* @brief    设置 VINREG 的增益为 100x
+* @brief   Set the gain of VINREG to 100x
 *****************************************/
 void SC8815_VINREG_SetRatio_100x(void)
 {
-    //清除 VINREG_RATIO 位
+    //Clear VINREG_RATIO bit
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL0_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) & 0xEF);
 }
 /****************************************
-* @brief    打开 OTG 反向放电模式中的 VBUS 过压保护功能
+* @brief    Turn on the VBUS overvoltage protection function in OTG reverse discharge mode
 *****************************************/
 void SC8815_OVP_Enable(void)
 {
-    //清除 DIS_OVP 位
+    //Clear DIS_OVP bit
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL1_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL1_SET) & 0xFB);
 }
 /****************************************
-* @brief    关闭 OTG 反向放电模式中的 VBUS 过压保护功能
+* @brief    Turn off the VBUS overvoltage protection function in OTG reverse discharge mode
 *****************************************/
 void SC8815_OVP_Disable(void)
 {
-    //设置 DIS_OVP 位
+    //Set DIS_OVP bit
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL1_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL1_SET) | 0x04);
 }
 /****************************************
-* @brief    打开 PGATE 引脚功能, 输出低电平打开 PMOS
+* @brief   Turn on PGATE pin function, output low level to turn on PMOS
 *****************************************/
 void SC8815_PGATE_Enable(void)
 {
-    //设置 EN_PGATE 位
+    //Set EN_PGATE bit
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) | 0x80);
 }
 /****************************************
-* @brief    关闭 PGATE 引脚功能, 输出高电平关闭 PMOS
+* @brief   Turn off PGATE pin function, output high level to turn off PMOS
 *****************************************/
 void SC8815_PGATE_Disable(void)
 {
-    //清除 EN_PGATE 位
+    //Clear the EN_PGATE bit
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0x7F);
 }
 /****************************************
