@@ -31,11 +31,11 @@ If the VBUS voltage feedback mode during OTG is the feedback of the external vol
 
 When setting the OTG output voltage, the library will automatically calculate the SC8815 register parameters according to the feedback method used. You only need to set the hardware parameter macro.
 
-#### 5. After completing a few simple configurations, you can start using this library.
+#### 4. After completing a few simple configurations, you can start using this library.
 
     It is recommended to modify the initialization parameters you need from the demo function, and then call the demo function to initialize.
 
-#### 6. Things needing attention:
+#### 5. Things needing attention:
 * Each parameter in the hardware initialization structure must use the specified macro definition value.
 * The library only operates on I2C, and the control pins (CE, PSTOP) of SC8815 need to be manually operated by you.
 * The library will not perform any active operations. The interrupt processing of SC8815 is to call SC8815_ReadInterrupStatus() to read the interrupt status after the interrupt occurs.
