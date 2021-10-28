@@ -2,11 +2,8 @@
 / SC8815 General Firmware Library Header File V0.1 (C)Sghz, 2021
 /------------------------------------------------- ---------------------------/
 /The SC8815 library is free software developed in accordance with the license policy under the following conditions.
-/
 / Copyright (C) 2021, Sghz, all rights reserved.
-/
 / 1. Redistribution of the source code must retain the above copyright notice, this condition and the following disclaimer.
-/
 / This software is provided "as is" by the copyright owner and contributors, and any guarantees related to this software are not liable.
 / The copyright owner or contributor is not responsible for any damage caused by the use of this software.
 /---------------------------------------------------------------------------*/
