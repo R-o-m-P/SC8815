@@ -1,21 +1,21 @@
 /*---------------------------------------------------------------------------/
-/  SC8815 Í¨ÓÃ¹Ì¼þ¿â V0.1 (C)Sghz£¬2021
+/  SC8815 library V0.1 (C)Sghzï¼Œ2021
 /----------------------------------------------------------------------------/
-/ SC8815¿âÊÇ¸ù¾ÝÒÔÏÂÌõ¼þµÄÐí¿ÉÖ¤Õþ²ß¿ª·¢µÄÃâ·ÑÈí¼þ¡£
+/ SC8815The library is free software developed in accordance with the license policy under the following conditions.
 /
-/ °æÈ¨ËùÓÐ (C) 2021£¬Sghz£¬±£ÁôËùÓÐÈ¨Àû¡£
+/Copyright (C) 2021, Sghz, all rights reserved.
 /
-/ 1.Ô´´úÂëµÄÖØÐÂ·Ö·¢±ØÐë±£ÁôÉÏÊö°æÈ¨ÉùÃ÷¡¢±¾Ìõ¼þºÍÒÔÏÂÃâÔðÉùÃ÷¡£
+/ 1. Redistribution of the source code must retain the above copyright notice, this condition and the following disclaimer.
 /
-/ ±¾Èí¼þÓÉ°æÈ¨ËùÓÐÕßºÍ¹±Ï×Õß¡°°´Ô­Ñù¡±Ìá¹©£¬Óë±¾Èí¼þÏà¹ØµÄÈÎºÎµ£±£¾ù²»³Ðµ£ÔðÈÎ¡£
-/ °æÈ¨ËùÓÐÈË»ò¹±Ï×Õß¶ÔÊ¹ÓÃ±¾Èí¼þÔì³ÉµÄÈÎºÎËðº¦¸Å²»¸ºÔð¡£
+/ This software is provided "as is" by the copyright owner and contributors, and any guarantees related to this software are not liable.
+/ The copyright owner or contributor is not responsible for any damage caused by the use of this software.
 /---------------------------------------------------------------------------*/
 
-//°üº¬Í·ÎÄ¼þ
+//Include header file
 #include "SC8815.h"
 
 /****************************************
-* @brief    ³õÊ¼»¯ SC8815 µÄÊ¾Àý Demo º¯Êý
+* @brief    Example Demo function to initialize SC8815
 *****************************************/
 void SC8815_Init_Demo(void)
 {
@@ -23,19 +23,19 @@ void SC8815_Init_Demo(void)
     SC8815_HardwareInitTypeDef SC8815_HardwareInitStruct = { 0 };
     SC8815_InterruptStatusTypeDef SC8815_InterruptMaskInitStruct = { 0 };
 
-    /****Æô¶¯ SC8815...****/
-    //->ÉèÖÃ PSTOP Îª¸ß
-    //->ÉèÖÃ CE ÎªµÍ
-    //SoftwareDelay(5);   //±ØÒªµÄÆô¶¯ÑÓÊ±
+    /****starting SC8815...****/
+    //->Set PSTOP to high
+     //->Set CE to low
+     //SoftwareDelay(5); //Necessary start delay
 
-    //ÅäÖÃ SC8815 µç³Ø²ÎÊýÑ¡Ïî
+     //Configure SC8815 battery parameter options
     SC8815_BatteryConfigStruct.IRCOMP = SCBAT_IRCOMP_20mR;
     SC8815_BatteryConfigStruct.VBAT_SEL = SCBAT_VBAT_SEL_Internal;
     SC8815_BatteryConfigStruct.CSEL = SCBAT_CSEL_4S;
     SC8815_BatteryConfigStruct.VCELL = SCBAT_VCELL_4v25;
     SC8815_BatteryConfig(&SC8815_BatteryConfigStruct);
 
-    //ÅäÖÃ SC8815 Ó²¼þ²ÎÊýÑ¡Ïî
+   //Configuring SC8815 hardware parameter options
     SC8815_HardwareInitStruct.IBAT_RATIO = SCHWI_IBAT_RATIO_6x;
     SC8815_HardwareInitStruct.IBUS_RATIO = SCHWI_IBUS_RATIO_3x;
     SC8815_HardwareInitStruct.VBAT_RATIO = SCHWI_VBAT_RATIO_12_5x;
@@ -59,54 +59,54 @@ void SC8815_Init_Demo(void)
     SC8815_HardwareInitStruct.PFM = SCHWI_PFM_Disable;
     SC8815_HardwareInit(&SC8815_HardwareInitStruct);
 
-    //ÅäÖÃ SC8815 ÖÐ¶ÏÆÁ±ÎÑ¡Ïî
+   //Configuring SC8815 interrupt mask option
     SC8815_InterruptMaskInitStruct.AC_OK = sENABLE;
     SC8815_InterruptMaskInitStruct.INDET = sENABLE;
     SC8815_InterruptMaskInitStruct.VBUS_SHORT = sENABLE;
     SC8815_InterruptMaskInitStruct.OTP = sENABLE;
     SC8815_InterruptMaskInitStruct.EOC = sENABLE;
     SC8815_ConfigInterruptMask(&SC8815_InterruptMaskInitStruct);
-    /***ÏÖÔÚ¿ÉÒÔÉèÖÃ PSTOP Òý½ÅÎªµÍ, Æô¶¯ SC8815 ¹¦ÂÊ×ª»»****/
+    /***Now you can set the PSTOP pin to low to start SC8815 power conversion****/
 
 
 
-    /*** Ê¾Àý1, ÉèÖÃÎª³äµçÄ£Ê½,µç³ØºÍ VBUS ÏÞÁ÷ 2A, VINREG ÉèÖÃÎª 12V ****/
+   /*** Example 1, set to charge mode, battery and VBUS current limit 2A, VINREG set to 12V ****/
     SC8815_SetBatteryCurrLimit(2000);
     SC8815_SetBusCurrentLimit(2000);
     SC8815_VINREG_SetVoltage(12000);
     SC8815_OTG_Disable();
 
 
-    /*** Ê¾Àý2, ÉèÖÃÎª·´Ïò·ÅµçÄ£Ê½,µç³ØºÍ VBUS ÏÞÁ÷ 3A, Êä³öµçÑ¹ ÉèÖÃÎª 12V ****/
+    /*** Example 2, set to reverse discharge mode, battery and VBUS current limit 3A, output voltage set to 12V ****/
     //SC8815_SetBatteryCurrLimit(2000);
     //SC8815_SetBusCurrentLimit(2000);
     //SC8815_SetOutputVoltage(12000);
     //SC8815_OTG_Enable();
 
 
-    /*** Ê¾Àý3, ¶ÁÈ¡ SC8815 ADC Êý¾Ý ****/
+    /*** Example 3, read SC8815 ADC data ****/
     //uint16_t VbusVolt = SC8815_Read_VBUS_Voltage();
     //uint16_t VbusCurr = SC8815_Read_VBUS_Current();
     //uint16_t BattVolt = SC8815_Read_BATT_Voltage();
     //uint16_t BattCurr = SC8815_Read_BATT_Current();
 
 
-    /*** Ê¾Àý4, ¶ÁÈ¡ SC8815 ÖÐ¶Ï×´Ì¬ ****/
-    SC8815_ReadInterrupStatus(&SC8815_InterruptMaskInitStruct);     //MCU ÊÕµ½ SC8815 ÖÐ¶Ïºóµ÷ÓÃ´Ëº¯Êý¶Á SC8815 ÖÐ¶Ï (¶ÁÖÐ¶Ï×´Ì¬ºó½«Çå³ýÖÐ¶Ï×´Ì¬Î»)
-    if (SC8815_InterruptMaskInitStruct.AC_OK == 1)                  //¼ì²é AC_OK ÖÐ¶ÏÊÇ·ñ´¥·¢
+   /*** Example 4, read SC8815 interrupt status ****/
+    SC8815_ReadInterrupStatus(&SC8815_InterruptMaskInitStruct);     //MCU calls this function after receiving the SC8815 interrupt to read the SC8815 interrupt (after reading the interrupt status, the interrupt status bit will be cleared)
+    if (SC8815_InterruptMaskInitStruct.AC_OK == 1)                  //Check if the AC_OK interrupt is triggered
     {
-        // AC_OK ÖÐ¶Ï´¦Àí´úÂë
+        // AC_OK interrupt handling code
     }
     else if (SC8815_InterruptMaskInitStruct.EOC == 1)
     {
-        // EOC ÖÐ¶Ï´¦Àí´úÂë
+        // EOC interrupt handling code
     }
 }
 
 /****************************************
-* @brief    ÅäÖÃ SC8815 µç³Ø²ÎÊý
-* @param    SC8815_BatteryConfigStruct Ö¸Ïò SC8815 µç³ØÅäÖÃ½á¹¹ µÄÖ¸Õë
-* @note		½øÐÐÅäÖÃÖ®Ç°ÏÈÆô¶¯ SC8815 ²¢ÑÓÊ± 5ms È·±£Æ÷¼þ¾ÍÐ÷,»¹ÐèÒª SC8815 PSTOP Òý½ÅÎª¸ß²ÅÄÜ½øÐÐ´ËÓ²¼þÅäÖÃ
+* @brief Configuring SC8815 battery parameters
+* @param SC8815_BatteryConfigStruct Pointer to SC8815 battery configuration structure
+* @note Before configuring, start SC8815 and delay 5ms to ensure that the device is ready. You also need SC8815 PSTOP pin to be high to perform this hardware configuration
 *****************************************/
 void SC8815_BatteryConfig(SC8815_BatteryConfigTypeDef *SC8815_BatteryConfigStruct)
 {
@@ -118,30 +118,30 @@ void SC8815_BatteryConfig(SC8815_BatteryConfigTypeDef *SC8815_BatteryConfigStruc
     I2C_WriteRegByte(SC8815_ADDR, SCREG_VBAT_SET, tmp);
 }
 /****************************************
-* @brief    ³õÊ¼»¯ SC8815 Ó²¼þÅäÖÃ
-* @param    SC8815_HardwareInitStruct Ö¸Ïò SC8815 Ó²¼þ³õÊ¼»¯½á¹¹ µÄÖ¸Õë
-* @note		½øÐÐÅäÖÃÖ®Ç°ÏÈÆô¶¯ SC8815 ²¢ÑÓÊ± 5ms È·±£Æ÷¼þ¾ÍÐ÷,»¹ÐèÒª SC8815 PSTOP Òý½ÅÎª¸ß²ÅÄÜ½øÐÐ´ËÓ²¼þÅäÖÃ
+* @brief Initializing SC8815 hardware configuration
+* @param SC8815_HardwareInitStruct Pointer to SC8815 hardware initialization structure
+* @note Before configuring, start SC8815 and delay 5ms to ensure that the device is ready. You also need SC8815 PSTOP pin to be high to perform this hardware configuration
 *****************************************/
 void SC8815_HardwareInit(SC8815_HardwareInitTypeDef *SC8815_HardwareInitStruct)
 {
     uint8_t tmp;
 
-    //±ÈÀýÅäÖÃ
-    tmp = I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0xE0; //¶ÁÈ¡¼Ä´æÆ÷ÖÐµÄ±£ÁôÎ»(ÕâÐ©±£ÁôÎ»²»ÄÜ¶¯)
-    tmp |= SC8815_HardwareInitStruct->IBAT_RATIO;           //×°ÌîÅäÖÃ²ÎÊý
+    //Ratio configuration
+    tmp = I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0xE0; //Read the reserved bits in the register (these reserved bits cannot be moved)
+    tmp |= SC8815_HardwareInitStruct->IBAT_RATIO;           //Loading configuration parameters
     tmp |= SC8815_HardwareInitStruct->IBUS_RATIO;
     tmp |= SC8815_HardwareInitStruct->VBAT_RATIO;
     tmp |= SC8815_HardwareInitStruct->VBUS_RATIO;
-    I2C_WriteRegByte(SC8815_ADDR, SCREG_RATIO, tmp);    //Ð´»Ø¼Ä´æÆ÷
+    I2C_WriteRegByte(SC8815_ADDR, SCREG_RATIO, tmp);    //Write back to register
 
-    //Ó²¼þÅäÖÃ0
+    //Hardware configuration 0
     tmp = I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) & 0x60;
     tmp |= SC8815_HardwareInitStruct->VINREG_Ratio;
     tmp |= SC8815_HardwareInitStruct->SW_FREQ;
     tmp |= SC8815_HardwareInitStruct->DeadTime;
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL0_SET, tmp);
 
-    //Ó²¼þÅäÖÃ1
+    //Hardware configuration 1
     tmp = I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL1_SET) & 0x03;
     tmp |= SC8815_HardwareInitStruct->ICHAR;
     tmp |= SC8815_HardwareInitStruct->TRICKLE;
@@ -151,13 +151,13 @@ void SC8815_HardwareInit(SC8815_HardwareInitTypeDef *SC8815_HardwareInitStruct)
     tmp |= SC8815_HardwareInitStruct->OVP;
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL1_SET, tmp);
 
-    //Ó²¼þÅäÖÃ2
+    //Hardware configuration 2
     tmp = (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL2_SET) & 0xF0) | 0x08;
     tmp |= SC8815_HardwareInitStruct->DITHER;
     tmp |= SC8815_HardwareInitStruct->SLEW_SET;
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL2_SET, tmp);
 
-    //Ó²¼þÅäÖÃ3(Ã»ÓÐ±£ÁôÎ»)
+    //Hardware configuration 3 (no reserved bits)
     tmp = SC8815_HardwareInitStruct->ADC_SCAN;
     tmp |= SC8815_HardwareInitStruct->ILIM_BW;
     tmp |= SC8815_HardwareInitStruct->LOOP;
@@ -166,12 +166,12 @@ void SC8815_HardwareInit(SC8815_HardwareInitTypeDef *SC8815_HardwareInitStruct)
     tmp |= SC8815_HardwareInitStruct->PFM;
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, tmp);
 
-    //ÅäÖÃÍê³Éºó±ØÒªµÄÑÓÊ±
+    //Delay required after the configuration is complete
     SoftwareDelay(5);
 }
 /****************************************
-* @brief    ÅäÖÃ SC8815 ÖÐ¶ÏÆÁ±Î (ÖÐ¶ÏÊ¹ÄÜ»òÊ§ÄÜ)
-* @param    InterruptStatusStruct Ö¸Ïò SC8815 ÖÐ¶Ï×´Ì¬ÅäÖÃ½á¹¹ µÄÖ¸Õë
+* @brief Configure SC8815 interrupt mask (interrupt enable or disable)
+* @param InterruptStatusStruct Pointer to SC8815 interrupt status configuration structure
 *****************************************/
 void SC8815_ConfigInterruptMask(SC8815_InterruptStatusTypeDef *InterruptStatusStruct)
 {
@@ -186,14 +186,14 @@ void SC8815_ConfigInterruptMask(SC8815_InterruptStatusTypeDef *InterruptStatusSt
 }
 
 /****************************************
-* @brief    ¶ÁÈ¡ SC8815 ¸÷ÖÐ¶Ï×´Ì¬
-* @param    InterruptStatusStruct Ö¸Ïò SC8815 ÖÐ¶Ï×´Ì¬½á¹¹ µÄÖ¸Õë
+* @brief read the interrupt status of SC8815
+* @param InterruptStatusStruct Pointer to SC8815 interrupt status structure
 *****************************************/
 void SC8815_ReadInterrupStatus(SC8815_InterruptStatusTypeDef *InterruptStatusStruct)
 {
     uint8_t tmp;
-    tmp = I2C_ReadRegByte(SC8815_ADDR, SCREG_MASK);     //¶ÁÈ¡×´Ì¬¼Ä´æÆ÷
-    InterruptStatusStruct->AC_OK = (tmp & 0x40) >> 6;   //²ð½â³öÃ¿Ò»¸öÎ»
+    tmp = I2C_ReadRegByte(SC8815_ADDR, SCREG_MASK);     //Read status register
+    InterruptStatusStruct->AC_OK = (tmp & 0x40) >> 6;   //Disassemble every bit
     InterruptStatusStruct->INDET = (tmp & 0x20) >> 5;
     InterruptStatusStruct->VBUS_SHORT = (tmp & 0x08) >> 3;
     InterruptStatusStruct->OTP = (tmp & 0x04) >> 2;
@@ -201,101 +201,101 @@ void SC8815_ReadInterrupStatus(SC8815_InterruptStatusTypeDef *InterruptStatusStr
 }
 
 /****************************************
-* @brief    ¶ÁÈ¡ SC8815 ÄÚÖÃ ADC ¶Ô VBUS µçÑ¹µÄ²âÁ¿½á¹û
-* @return   µ¥Î»Îª mV µÄ VBUS µçÑ¹
+* @brief reads the measurement result of the VBUS voltage by the built-in ADC of SC8815
+* @return VBUS voltage in mV
 *****************************************/
 uint16_t SC8815_Read_VBUS_Voltage(void)
 {
     uint8_t tmp1, tmp2;
     double RATIO_Value;
 
-    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x01) == 1) ? 5 : 12.5; //È¡µÃ VBUS µçÑ¹µÄ±ÈÂÊ
-    tmp1 = I2C_ReadRegByte(SC8815_ADDR, SCREG_VBUS_FB_VALUE);           //¶ÁÈ¡ ADC Öµ¼Ä´æÆ÷1
-    tmp2 = I2C_ReadRegByte(SC8815_ADDR, SCREG_VBUS_FB_VALUE2) >> 6;     //¶ÁÈ¡ ADC Öµ¼Ä´æÆ÷2
+    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x01) == 1) ? 5 : 12.5; //Get the ratio of VBUS voltage
+    tmp1 = I2C_ReadRegByte(SC8815_ADDR, SCREG_VBUS_FB_VALUE);           //Read ADC value register 1
+    tmp2 = I2C_ReadRegByte(SC8815_ADDR, SCREG_VBUS_FB_VALUE2) >> 6;     //Read ADC value register 2
 
-    //·µ»Ø VBUS µçÑ¹Öµ
+    //Return VBUS voltage value
     return (uint16_t)((4 * tmp1 + tmp2 + 1) * RATIO_Value) * 2;
 }
 /****************************************
-* @brief    ¶ÁÈ¡ SC8815 ÄÚÖÃ ADC ¶Ô VBUS µçÁ÷µÄ²âÁ¿½á¹û
-* @return   µ¥Î»Îª mA µÄ VBUS µçÁ÷ (SC8815 ÎÞµçÁ÷·½ÏòÇø·Ö)
+* @brief reads the measurement result of the VBUS current by the built-in ADC of SC8815
+* @return VBUS current in mA (SC8815 has no current direction distinction)
 *****************************************/
 uint16_t SC8815_Read_VBUS_Current(void)
 {
     uint8_t tmp1, tmp2;
     uint16_t RATIO_Value;
 
-    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x0C) == 4) ? 6 : 3;    //È¡µÃ IBUS µÄ±ÈÂÊ
-    tmp1 = I2C_ReadRegByte(SC8815_ADDR, SCREG_IBUS_VALUE);              //¶ÁÈ¡ ADC Öµ¼Ä´æÆ÷1
-    tmp2 = I2C_ReadRegByte(SC8815_ADDR, SCREG_IBUS_VALUE2) >> 6;        //¶ÁÈ¡ ADC Öµ¼Ä´æÆ÷2
+    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x0C) == 4) ? 6 : 3;    //IBUS ratio
+    tmp1 = I2C_ReadRegByte(SC8815_ADDR, SCREG_IBUS_VALUE);              //Read ADC value register 1
+    tmp2 = I2C_ReadRegByte(SC8815_ADDR, SCREG_IBUS_VALUE2) >> 6;        //Read ADC value register 2
 
-    //·µ»Ø VBUS µçÁ÷Öµ
+    //Return VBUS current value
     return ((uint16_t)(50 * RATIO_Value) * (4 * tmp1 + tmp2 + 1)) / (3 * SCHW_VBUS_RSHUNT);
 }
 /****************************************
-* @brief    ¶ÁÈ¡ SC8815 ÄÚÖÃ ADC ¶Ôµç³ØµçÑ¹µÄ²âÁ¿½á¹û
-* @return   µ¥Î»Îª mV µÄµç³ØµçÑ¹
+* @brief    è¯»å– SC8815 å†…ç½® ADC å¯¹ç”µæ± ç”µåŽ‹çš„æµ‹é‡ç»“æžœ
+* @return   å•ä½ä¸º mV çš„ç”µæ± ç”µåŽ‹
 *****************************************/
 uint16_t SC8815_Read_BATT_Voltage(void)
 {
     uint8_t tmp1, tmp2;
     double RATIO_Value;
 
-    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x02) == 2) ? 5 : 12.5; //È¡µÃµç³ØµçÑ¹µÄ±ÈÂÊ
-    tmp1 = I2C_ReadRegByte(SC8815_ADDR, SCREG_VBAT_FB_VALUE);           //¶ÁÈ¡ ADC Öµ¼Ä´æÆ÷1
-    tmp2 = I2C_ReadRegByte(SC8815_ADDR, SCREG_VBAT_FB_VALUE2) >> 6;     //¶ÁÈ¡ ADC Öµ¼Ä´æÆ÷2
+    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x02) == 2) ? 5 : 12.5; //å–å¾—ç”µæ± ç”µåŽ‹çš„æ¯”çŽ‡
+    tmp1 = I2C_ReadRegByte(SC8815_ADDR, SCREG_VBAT_FB_VALUE);           //è¯»å– ADC å€¼å¯„å­˜å™¨1
+    tmp2 = I2C_ReadRegByte(SC8815_ADDR, SCREG_VBAT_FB_VALUE2) >> 6;     //è¯»å– ADC å€¼å¯„å­˜å™¨2
 
-    //·µ»Øµç³ØµçÑ¹Öµ
+    //è¿”å›žç”µæ± ç”µåŽ‹å€¼
     return (uint16_t)((4 * tmp1 + tmp2 + 1) * RATIO_Value) * 2;
 }
 /****************************************
-* @brief    ¶ÁÈ¡ SC8815 ÄÚÖÃ ADC ¶Ôµç³ØµçÁ÷µÄ²âÁ¿½á¹û
-* @return   µ¥Î»Îª mA µÄµç³ØµçÁ÷ (SC8815 ÎÞµçÁ÷·½ÏòÇø·Ö)
+* @brief    è¯»å– SC8815 å†…ç½® ADC å¯¹ç”µæ± ç”µæµçš„æµ‹é‡ç»“æžœ
+* @return   å•ä½ä¸º mA çš„ç”µæ± ç”µæµ (SC8815 æ— ç”µæµæ–¹å‘åŒºåˆ†)
 *****************************************/
 uint16_t SC8815_Read_BATT_Current(void)
 {
     uint8_t tmp1, tmp2;
     uint16_t RATIO_Value;
 
-    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x10) == 16) ? 12 : 6;  //È¡µÃ IBAT µÄ±ÈÂÊ
-    tmp1 = I2C_ReadRegByte(SC8815_ADDR, SCREG_IBAT_VALUE);              //¶ÁÈ¡ ADC Öµ¼Ä´æÆ÷1
-    tmp2 = I2C_ReadRegByte(SC8815_ADDR, SCREG_IBAT_VALUE2) >> 6;        //¶ÁÈ¡ ADC Öµ¼Ä´æÆ÷2
+    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x10) == 16) ? 12 : 6;  //å–å¾— IBAT çš„æ¯”çŽ‡
+    tmp1 = I2C_ReadRegByte(SC8815_ADDR, SCREG_IBAT_VALUE);              //è¯»å– ADC å€¼å¯„å­˜å™¨1
+    tmp2 = I2C_ReadRegByte(SC8815_ADDR, SCREG_IBAT_VALUE2) >> 6;        //è¯»å– ADC å€¼å¯„å­˜å™¨2
 
-    //·µ»Ø IBAT µçÁ÷Öµ
+    //è¿”å›ž IBAT ç”µæµå€¼
     return (uint16_t)((50 * RATIO_Value) * (4 * tmp1 + tmp2 + 1)) / (3 * SCHW_BATT_RSHUNT);
 }
 /****************************************
-* @brief    ¶ÁÈ¡ SC8815 ÄÚÖÃ ADC ¶Ô ADIN_PIN µçÑ¹µÄ²âÁ¿½á¹û
-* @return   µ¥Î»Îª mV µÄ ADIN_PIN µçÑ¹
+* @brief    è¯»å– SC8815 å†…ç½® ADC å¯¹ ADIN_PIN ç”µåŽ‹çš„æµ‹é‡ç»“æžœ
+* @return   å•ä½ä¸º mV çš„ ADIN_PIN ç”µåŽ‹
 *****************************************/
 uint16_t SC8815_Read_ADIN_Voltage(void)
 {
     uint8_t tmp1,tmp2;
 
-    tmp1 = I2C_ReadRegByte(SC8815_ADDR, SCREG_ADIN_VALUE);          //¶ÁÈ¡ ADC Öµ¼Ä´æÆ÷1
-    tmp2 = I2C_ReadRegByte(SC8815_ADDR, SCREG_ADIN_VALUE2) >> 6;    //¶ÁÈ¡ ADC Öµ¼Ä´æÆ÷2
+    tmp1 = I2C_ReadRegByte(SC8815_ADDR, SCREG_ADIN_VALUE);          //è¯»å– ADC å€¼å¯„å­˜å™¨1
+    tmp2 = I2C_ReadRegByte(SC8815_ADDR, SCREG_ADIN_VALUE2) >> 6;    //è¯»å– ADC å€¼å¯„å­˜å™¨2
 
-    //·µ»Ø ADIN_PIN µçÑ¹Öµ
+    //è¿”å›ž ADIN_PIN ç”µåŽ‹å€¼
     return (uint16_t)(4 * tmp1 + tmp2 + 1) * 2;
 }
 
 /****************************************
-* @brief    ÉèÖÃ SC8815 ÔÚ OTG ·´ÏòÊä³öÊ±µÄÊä³öµçÑ¹
-* @param    NewVolt ÐÂµÄµ¥Î»Îª mV µÄÊä³öµçÑ¹Éè¶¨Öµ
-* @note     ²»µÃÊäÈë³¬³ö×î´ó¿ÉÉè¶¨ÖµµÄµçÑ¹Öµ, Èç×î´óÊä³ö 1024mV,  ÊäÈë 1145mV ½«µ¼ÖÂ¼ÆËã½á¹ûÒç³ö´íÎó
+* @brief    è®¾ç½® SC8815 åœ¨ OTG åå‘è¾“å‡ºæ—¶çš„è¾“å‡ºç”µåŽ‹
+* @param    NewVolt æ–°çš„å•ä½ä¸º mV çš„è¾“å‡ºç”µåŽ‹è®¾å®šå€¼
+* @note     ä¸å¾—è¾“å…¥è¶…å‡ºæœ€å¤§å¯è®¾å®šå€¼çš„ç”µåŽ‹å€¼, å¦‚æœ€å¤§è¾“å‡º 1024mV,  è¾“å…¥ 1145mV å°†å¯¼è‡´è®¡ç®—ç»“æžœæº¢å‡ºé”™è¯¯
 *****************************************/
 void SC8815_SetOutputVoltage(uint16_t NewVolt)
 {
     uint16_t tmp1,tmp2;
     double RATIO_Value;
 
-    //ÅÐ¶Ï VBUS µçÑ¹·´À¡µÄÄ£Ê½
+    //åˆ¤æ–­ VBUS ç”µåŽ‹åé¦ˆçš„æ¨¡å¼
     if (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL1_SET) & 0x10)
     {
-        RATIO_Value = (double)SCHW_FB_RUP / SCHW_FB_RDOWM + 1.0;    //¼ÆËãÊä³öµçÑ¹±ÈÂÊ
-        tmp1 = (NewVolt / RATIO_Value) / 2;                         //¼ÆËã¶ÔÓ¦µÄ²Î¿¼µçÑ¹
+        RATIO_Value = (double)SCHW_FB_RUP / SCHW_FB_RDOWM + 1.0;    //è®¡ç®—è¾“å‡ºç”µåŽ‹æ¯”çŽ‡
+        tmp1 = (NewVolt / RATIO_Value) / 2;                         //è®¡ç®—å¯¹åº”çš„å‚è€ƒç”µåŽ‹
 
-        //µÃµ½ VBUSREF ¼Ä´æÆ÷ 2 µÄÖµ
+        //å¾—åˆ° VBUSREF å¯„å­˜å™¨ 2 çš„å€¼
         for (tmp2 = 0; tmp2 < 3; tmp2++)
         {
             if (((tmp1 - tmp2 - 1) % 4) == 0)
@@ -304,19 +304,19 @@ void SC8815_SetOutputVoltage(uint16_t NewVolt)
             }
         }
 
-        //µÃµ½ VBUSREF ¼Ä´æÆ÷ 1 µÄÖµ
+        //å¾—åˆ° VBUSREF å¯„å­˜å™¨ 1 çš„å€¼
         tmp1 = (tmp1 - tmp2 - 1) / 4;
 
-        //Ð´Èëµ½ SC8815 VBUSREF_E_SET ¼Ä´æÆ÷
+        //å†™å…¥åˆ° SC8815 VBUSREF_E_SET å¯„å­˜å™¨
         I2C_WriteRegByte(SC8815_ADDR, SCREG_VBUSREF_E_SET, (uint8_t)tmp1);
         I2C_WriteRegByte(SC8815_ADDR, SCREG_VBUSREF_E_SET2, (uint8_t)tmp2);
     }
     else
     {
-        RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x01) == 1) ? 5 : 12.5; //È¡µÃ VBUS µçÑ¹µÄ±ÈÂÊ
-        tmp1 = NewVolt / RATIO_Value / 2;   //¼ÆËã¶ÔÓ¦µÄ²Î¿¼µçÑ¹
+        RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x01) == 1) ? 5 : 12.5; //å–å¾— VBUS ç”µåŽ‹çš„æ¯”çŽ‡
+        tmp1 = NewVolt / RATIO_Value / 2;   //è®¡ç®—å¯¹åº”çš„å‚è€ƒç”µåŽ‹
 
-        //µÃµ½ VBUSREF ¼Ä´æÆ÷ 2 µÄÖµ
+        //å¾—åˆ° VBUSREF å¯„å­˜å™¨ 2 çš„å€¼
         for (tmp2 = 0; tmp2 < 3; tmp2++)
         {
             if (((tmp1 - tmp2 - 1) % 4) == 0)
@@ -325,328 +325,328 @@ void SC8815_SetOutputVoltage(uint16_t NewVolt)
             }
         }
 
-        //µÃµ½ VBUSREF ¼Ä´æÆ÷ 1 µÄÖµ
+        //å¾—åˆ° VBUSREF å¯„å­˜å™¨ 1 çš„å€¼
         tmp1 = (tmp1 - tmp2 - 1) / 4;
 
-        //Ð´Èëµ½ SC8815 VBUSREF_I_SET ¼Ä´æÆ÷
+        //å†™å…¥åˆ° SC8815 VBUSREF_I_SET å¯„å­˜å™¨
         I2C_WriteRegByte(SC8815_ADDR, SCREG_VBUSREF_I_SET, (uint8_t)tmp1);
         I2C_WriteRegByte(SC8815_ADDR, SCREG_VBUSREF_I_SET2, (uint8_t)tmp2);
     }
 }
 /****************************************
-* @brief    ÉèÖÃ SC8815 VBUS Â·¾¶ÉÏµÄÏÞÁ÷Öµ,Ë«ÏòÍ¨ÓÃ
-* @param    NewILIM ÐÂµÄµ¥Î»Îª mA µÄÊä³öÏÞÁ÷Éè¶¨Öµ
-* @note     ×îÐ¡µÄÏÞÁ÷Öµ²»Ó¦µÍÓÚ 300mA, ²»µÃÊäÈë³¬³ö×î´ó¿ÉÉè¶¨ÖµµÄµçÁ÷Öµ
+* @brief    è®¾ç½® SC8815 VBUS è·¯å¾„ä¸Šçš„é™æµå€¼,åŒå‘é€šç”¨
+* @param    NewILIM æ–°çš„å•ä½ä¸º mA çš„è¾“å‡ºé™æµè®¾å®šå€¼
+* @note     æœ€å°çš„é™æµå€¼ä¸åº”ä½ŽäºŽ 300mA, ä¸å¾—è¾“å…¥è¶…å‡ºæœ€å¤§å¯è®¾å®šå€¼çš„ç”µæµå€¼
 *****************************************/
 void SC8815_SetBusCurrentLimit(uint16_t NewILIM)
 {
     uint8_t tmp;
     uint16_t RATIO_Value;
 
-    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x0C) == 4) ? 6 : 3;    //È¡µÃ IBUS µÄ±ÈÂÊ
-    tmp = (16 * (NewILIM) * (SCHW_VBUS_RSHUNT)) / (625 * RATIO_Value) - 1;              //¼ÆËã LIM ÉèÖÃÖµ
-    I2C_WriteRegByte(SC8815_ADDR, SCREG_IBUS_LIM_SET, tmp);                             //Ð´Èëµ½ SC8815 ¼Ä´æÆ÷
+    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x0C) == 4) ? 6 : 3;    //å–å¾— IBUS çš„æ¯”çŽ‡
+    tmp = (16 * (NewILIM) * (SCHW_VBUS_RSHUNT)) / (625 * RATIO_Value) - 1;              //è®¡ç®— LIM è®¾ç½®å€¼
+    I2C_WriteRegByte(SC8815_ADDR, SCREG_IBUS_LIM_SET, tmp);                             //å†™å…¥åˆ° SC8815 å¯„å­˜å™¨
 }
 /****************************************
-* @brief    ÉèÖÃ SC8815 µç³ØÂ·¾¶ÉÏµÄÏÞÁ÷Öµ,Ë«ÏòÍ¨ÓÃ
-* @param    NewILIM ÐÂµÄµ¥Î»Îª mA µÄµç³ØÏÞÁ÷Éè¶¨Öµ
-* @note     ×îÐ¡µÄÏÞÁ÷Öµ²»Ó¦µÍÓÚ 300mA, ²»µÃÊäÈë³¬³ö×î´ó¿ÉÉè¶¨ÖµµÄµçÁ÷Öµ
+* @brief    è®¾ç½® SC8815 ç”µæ± è·¯å¾„ä¸Šçš„é™æµå€¼,åŒå‘é€šç”¨
+* @param    NewILIM æ–°çš„å•ä½ä¸º mA çš„ç”µæ± é™æµè®¾å®šå€¼
+* @note     æœ€å°çš„é™æµå€¼ä¸åº”ä½ŽäºŽ 300mA, ä¸å¾—è¾“å…¥è¶…å‡ºæœ€å¤§å¯è®¾å®šå€¼çš„ç”µæµå€¼
 *****************************************/
 void SC8815_SetBatteryCurrLimit(uint16_t NewILIM)
 {
     uint8_t tmp;
     uint16_t RATIO_Value;
 
-    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x10) == 16) ? 12 : 6; //È¡µÃ IBAT µÄ±ÈÂÊ
-    tmp = (16 * (NewILIM) * (SCHW_VBUS_RSHUNT)) / (625 * RATIO_Value) - 1;             //¼ÆËã LIM ÉèÖÃÖµ
-    I2C_WriteRegByte(SC8815_ADDR, SCREG_IBAT_LIM_SET, tmp);                            //Ð´Èëµ½ SC8815 ¼Ä´æÆ÷
+    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x10) == 16) ? 12 : 6; //å–å¾— IBAT çš„æ¯”çŽ‡
+    tmp = (16 * (NewILIM) * (SCHW_VBUS_RSHUNT)) / (625 * RATIO_Value) - 1;             //è®¡ç®— LIM è®¾ç½®å€¼
+    I2C_WriteRegByte(SC8815_ADDR, SCREG_IBAT_LIM_SET, tmp);                            //å†™å…¥åˆ° SC8815 å¯„å­˜å™¨
 }
 /****************************************
-* @brief    ÉèÖÃ SC8815 VINREG µçÑ¹Öµ (ÀàËÆ MPPT)
-* @param    NewVolt ÐÂµÄµ¥Î»Îª mV µÄ VINREG µçÑ¹Éè¶¨Öµ
-* @note     ²»µÃÊäÈë³¬³ö×î´ó¿ÉÉè¶¨ÖµµÄµçÑ¹Öµ
+* @brief    è®¾ç½® SC8815 VINREG ç”µåŽ‹å€¼ (ç±»ä¼¼ MPPT)
+* @param    NewVolt æ–°çš„å•ä½ä¸º mV çš„ VINREG ç”µåŽ‹è®¾å®šå€¼
+* @note     ä¸å¾—è¾“å…¥è¶…å‡ºæœ€å¤§å¯è®¾å®šå€¼çš„ç”µåŽ‹å€¼
 *****************************************/
 void SC8815_VINREG_SetVoltage(uint16_t NewVolt)
 {
     uint16_t RATIO_Value;
-    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) & 0x10) == 16) ? 40 : 100;    //È¡µÃ VINREG µÄ±ÈÂÊ
-    I2C_WriteRegByte(SC8815_ADDR, SCREG_VINREG_SET, (NewVolt / RATIO_Value) - 1);               //Ð´Èëµ½ SC8815 ¼Ä´æÆ÷
+    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) & 0x10) == 16) ? 40 : 100;    //å–å¾— VINREG çš„æ¯”çŽ‡
+    I2C_WriteRegByte(SC8815_ADDR, SCREG_VINREG_SET, (NewVolt / RATIO_Value) - 1);               //å†™å…¥åˆ° SC8815 å¯„å­˜å™¨
 }
 
 /****************************************
-* @brief    »ñÈ¡ SC8815 ÔÚ OTG ·´ÏòÊä³öÊ±µÄÊä³öµçÑ¹Éè¶¨Öµ
-* @return   µ¥Î»Îª mV µÄÊä³öµçÑ¹Éè¶¨Öµ
+* @brief    èŽ·å– SC8815 åœ¨ OTG åå‘è¾“å‡ºæ—¶çš„è¾“å‡ºç”µåŽ‹è®¾å®šå€¼
+* @return   å•ä½ä¸º mV çš„è¾“å‡ºç”µåŽ‹è®¾å®šå€¼
 *****************************************/
 uint16_t SC8815_GetOutputVoltage(void)
 {
     uint16_t tmp1, tmp2;
     double RATIO_Value;
 
-    //ÅÐ¶Ï VBUS µçÑ¹·´À¡µÄÄ£Ê½
+    //åˆ¤æ–­ VBUS ç”µåŽ‹åé¦ˆçš„æ¨¡å¼
     if (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL1_SET) & 0x10)
     {
-        //¶ÁÈ¡ VBUSREF_E_SET ¼Ä´æÆ÷
+        //è¯»å– VBUSREF_E_SET å¯„å­˜å™¨
         tmp1 = I2C_ReadRegByte(SC8815_ADDR, SCREG_VBUSREF_E_SET);
         tmp2 = I2C_ReadRegByte(SC8815_ADDR, SCREG_VBUSREF_E_SET2);
 
-        //¼ÆËãÊä³öµçÑ¹±ÈÂÊ
+        //è®¡ç®—è¾“å‡ºç”µåŽ‹æ¯”çŽ‡
         RATIO_Value = (double)SCHW_FB_RUP / SCHW_FB_RDOWM + 1.0;
     }
     else
     {
-        //¶ÁÈ¡ VBUSREF_E_SET ¼Ä´æÆ÷
+        //è¯»å– VBUSREF_E_SET å¯„å­˜å™¨
         tmp1 = I2C_ReadRegByte(SC8815_ADDR, SCREG_VBUSREF_E_SET);
         tmp2 = I2C_ReadRegByte(SC8815_ADDR, SCREG_VBUSREF_E_SET2);
 
-        //È¡µÃVBUSµçÑ¹µÄ±ÈÂÊ
+        //å–å¾—VBUSç”µåŽ‹çš„æ¯”çŽ‡
         RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x01) == 1) ? 5 : 12.5;
     }
 
-    //·µ»Ø¶ÔÓ¦µÄÊä³öµçÑ¹
+    //è¿”å›žå¯¹åº”çš„è¾“å‡ºç”µåŽ‹
     return (uint16_t)((4 * tmp1 + tmp2 + 1) * RATIO_Value) * 2;
 }
 /****************************************
-* @brief    »ñÈ¡ SC8815 VBUS Â·¾¶ÉÏµÄÏÞÁ÷Éè¶¨Öµ
-* @return   µ¥Î»Îª mA µÄ VBUS Â·¾¶ÏÞÁ÷Éè¶¨Öµ
+* @brief    èŽ·å– SC8815 VBUS è·¯å¾„ä¸Šçš„é™æµè®¾å®šå€¼
+* @return   å•ä½ä¸º mA çš„ VBUS è·¯å¾„é™æµè®¾å®šå€¼
 *****************************************/
 uint16_t SC8815_GetBusCurrentLimit(void)
 {
     uint8_t tmp;
     uint16_t RATIO_Value;
 
-    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x0C) == 4) ? 6 : 3; //È¡µÃ IBUS µÄ±ÈÂÊ
-    tmp = I2C_ReadRegByte(SC8815_ADDR, SCREG_IBUS_LIM_SET);                          //È¡µÃ IBUS ÏÞÁ÷¼Ä´æÆ÷Öµ
+    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x0C) == 4) ? 6 : 3; //å–å¾— IBUS çš„æ¯”çŽ‡
+    tmp = I2C_ReadRegByte(SC8815_ADDR, SCREG_IBUS_LIM_SET);                          //å–å¾— IBUS é™æµå¯„å­˜å™¨å€¼
 
-    //·µ»ØIBUSÏÞÁ÷Öµ
+    //è¿”å›žIBUSé™æµå€¼
     return (uint16_t)((uint32_t)(625 * (RATIO_Value) * (tmp + 1)) / (16 * (SCHW_VBUS_RSHUNT)));
 }
 /****************************************
-* @brief    »ñÈ¡ SC8815 µç³ØÂ·¾¶ÉÏµÄÏÞÁ÷Éè¶¨Öµ
-* @return   µ¥Î»Îª mA µÄµç³ØÂ·¾¶ÏÞÁ÷Éè¶¨Öµ
+* @brief    èŽ·å– SC8815 ç”µæ± è·¯å¾„ä¸Šçš„é™æµè®¾å®šå€¼
+* @return   å•ä½ä¸º mA çš„ç”µæ± è·¯å¾„é™æµè®¾å®šå€¼
 *****************************************/
 uint16_t SC8815_GetBatteryCurrLimit(void)
 {
     uint8_t tmp;
     uint16_t RATIO_Value;
 
-    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x10) == 16) ? 12 : 6; //È¡µÃ IBAT µÄ±ÈÂÊ
-    tmp = I2C_ReadRegByte(SC8815_ADDR, SCREG_IBAT_LIM_SET);                            //È¡µÃ IBAT ÏÞÁ÷¼Ä´æÆ÷Öµ
+    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_RATIO) & 0x10) == 16) ? 12 : 6; //å–å¾— IBAT çš„æ¯”çŽ‡
+    tmp = I2C_ReadRegByte(SC8815_ADDR, SCREG_IBAT_LIM_SET);                            //å–å¾— IBAT é™æµå¯„å­˜å™¨å€¼
 
-    //·µ»ØIBATÏÞÁ÷Öµ
+    //è¿”å›žIBATé™æµå€¼
     return (uint16_t)((uint32_t)(625 * (RATIO_Value) * (tmp + 1)) / (16 * (SCHW_BATT_RSHUNT)));
 }
 /****************************************
-* @brief    »ñÈ¡ SC8815 VINREG µçÑ¹Éè¶¨Öµ
-* @return   µ¥Î»Îª mV µÄ VINREG µçÑ¹Éè¶¨Öµ
+* @brief    èŽ·å– SC8815 VINREG ç”µåŽ‹è®¾å®šå€¼
+* @return   å•ä½ä¸º mV çš„ VINREG ç”µåŽ‹è®¾å®šå€¼
 *****************************************/
 uint16_t SC8815_VINREG_GetVoltage(void)
 {
     uint8_t tmp;
     uint16_t RATIO_Value;
-    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) & 0x10) == 16) ? 40 : 100; //È¡µÃ VINREG µÄ±ÈÂÊ
-    tmp = I2C_ReadRegByte(SC8815_ADDR, SCREG_VINREG_SET);                                    //È¡µÃ VINREG ¼Ä´æÆ÷Öµ
+    RATIO_Value = ((I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) & 0x10) == 16) ? 40 : 100; //å–å¾— VINREG çš„æ¯”çŽ‡
+    tmp = I2C_ReadRegByte(SC8815_ADDR, SCREG_VINREG_SET);                                    //å–å¾— VINREG å¯„å­˜å™¨å€¼
     return tmp * RATIO_Value;
 }
 
 /****************************************
-* @brief    ´ò¿ª OTG ·´Ïò·ÅµçÄ£Ê½
+* @brief    æ‰“å¼€ OTG åå‘æ”¾ç”µæ¨¡å¼
 *****************************************/
 void SC8815_OTG_Enable(void)
 {
-    //ÉèÖÃ EN_OTG Î»
+    //è®¾ç½® EN_OTG ä½
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL0_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) | 0x80);
 }
 /****************************************
-* @brief    ¹Ø±Õ OTG ·´Ïò·ÅµçÄ£Ê½, SC8815 ½«´¦ÓÚ³äµçÄ£Ê½
+* @brief    å…³é—­ OTG åå‘æ”¾ç”µæ¨¡å¼, SC8815 å°†å¤„äºŽå……ç”µæ¨¡å¼
 *****************************************/
 void SC8815_OTG_Disable(void)
 {
-    //Çå³ý EN_OTG Î»
+    //æ¸…é™¤ EN_OTG ä½
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL0_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) & 0x7F);
 }
 /****************************************
-* @brief    ÉèÖÃ VINREG µÄÔöÒæÎª 40x
+* @brief    è®¾ç½® VINREG çš„å¢žç›Šä¸º 40x
 *****************************************/
 void SC8815_VINREG_SetRatio_40x(void)
 {
-    //ÉèÖÃ VINREG_RATIO Î»
+    //è®¾ç½® VINREG_RATIO ä½
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL0_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) | 0x10);
 }
 /****************************************
-* @brief    ÉèÖÃ VINREG µÄÔöÒæÎª 100x
+* @brief    è®¾ç½® VINREG çš„å¢žç›Šä¸º 100x
 *****************************************/
 void SC8815_VINREG_SetRatio_100x(void)
 {
-    //Çå³ý VINREG_RATIO Î»
+    //æ¸…é™¤ VINREG_RATIO ä½
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL0_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) & 0xEF);
 }
 /****************************************
-* @brief    ´ò¿ª OTG ·´Ïò·ÅµçÄ£Ê½ÖÐµÄ VBUS ¹ýÑ¹±£»¤¹¦ÄÜ
+* @brief    æ‰“å¼€ OTG åå‘æ”¾ç”µæ¨¡å¼ä¸­çš„ VBUS è¿‡åŽ‹ä¿æŠ¤åŠŸèƒ½
 *****************************************/
 void SC8815_OVP_Enable(void)
 {
-    //Çå³ý DIS_OVP Î»
+    //æ¸…é™¤ DIS_OVP ä½
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL1_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL1_SET) & 0xFB);
 }
 /****************************************
-* @brief    ¹Ø±Õ OTG ·´Ïò·ÅµçÄ£Ê½ÖÐµÄ VBUS ¹ýÑ¹±£»¤¹¦ÄÜ
+* @brief    å…³é—­ OTG åå‘æ”¾ç”µæ¨¡å¼ä¸­çš„ VBUS è¿‡åŽ‹ä¿æŠ¤åŠŸèƒ½
 *****************************************/
 void SC8815_OVP_Disable(void)
 {
-    //ÉèÖÃ DIS_OVP Î»
+    //è®¾ç½® DIS_OVP ä½
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL1_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL1_SET) | 0x04);
 }
 /****************************************
-* @brief    ´ò¿ª PGATE Òý½Å¹¦ÄÜ, Êä³öµÍµçÆ½´ò¿ª PMOS
+* @brief    æ‰“å¼€ PGATE å¼•è„šåŠŸèƒ½, è¾“å‡ºä½Žç”µå¹³æ‰“å¼€ PMOS
 *****************************************/
 void SC8815_PGATE_Enable(void)
 {
-    //ÉèÖÃ EN_PGATE Î»
+    //è®¾ç½® EN_PGATE ä½
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) | 0x80);
 }
 /****************************************
-* @brief    ¹Ø±Õ PGATE Òý½Å¹¦ÄÜ, Êä³ö¸ßµçÆ½¹Ø±Õ PMOS
+* @brief    å…³é—­ PGATE å¼•è„šåŠŸèƒ½, è¾“å‡ºé«˜ç”µå¹³å…³é—­ PMOS
 *****************************************/
 void SC8815_PGATE_Disable(void)
 {
-    //Çå³ý EN_PGATE Î»
+    //æ¸…é™¤ EN_PGATE ä½
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0x7F);
 }
 /****************************************
-* @brief    ´ò¿ª GPO Òý½Å¹¦ÄÜ, Êä³öµÍµçÆ½
+* @brief    æ‰“å¼€ GPO å¼•è„šåŠŸèƒ½, è¾“å‡ºä½Žç”µå¹³
 *****************************************/
 void SC8815_GPO_Enable(void)
 {
-    //ÉèÖÃ GPO_CTRL Î»
+    //è®¾ç½® GPO_CTRL ä½
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) | 0x40);
 }
 /****************************************
-* @brief    ¹Ø±Õ GPO Òý½Å¹¦ÄÜ, Êä³ö¸ß×è×´Ì¬
+* @brief    å…³é—­ GPO å¼•è„šåŠŸèƒ½, è¾“å‡ºé«˜é˜»çŠ¶æ€
 *****************************************/
 void SC8815_GPO_Disable(void)
 {
-    //Çå³ý GPO_CTRL Î»
+    //æ¸…é™¤ GPO_CTRL ä½
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0xBF);
 }
 /****************************************
-* @brief    ´ò¿ª ADC É¨Ãè, ´ËÊ±¿ÉÒÔ¶ÁÈ¡ ADC Êý¾Ý
+* @brief    æ‰“å¼€ ADC æ‰«æ, æ­¤æ—¶å¯ä»¥è¯»å– ADC æ•°æ®
 *****************************************/
 void SC8815_ADC_Enable(void)
 {
-    //ÉèÖÃ AD_START Î»
+    //è®¾ç½® AD_START ä½
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) | 0x20);
 }
 /****************************************
-* @brief    ¹Ø±Õ ADC É¨Ãè, ½ÚÔ¼ 1-2mA µÄºÄµç
+* @brief    å…³é—­ ADC æ‰«æ, èŠ‚çº¦ 1-2mA çš„è€—ç”µ
 *****************************************/
 void SC8815_ADC_Disable(void)
 {
-    //Çå³ý AD_START Î»
+    //æ¸…é™¤ AD_START ä½
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0xDF);
 }
 /****************************************
-* @brief    ´ò¿ª OTG ·´Ïò·ÅµçÄ£Ê½ÖÐµÄ VBUS ºÍ VBAT ¶ÌÂ·±£»¤¹¦ÄÜ
+* @brief    æ‰“å¼€ OTG åå‘æ”¾ç”µæ¨¡å¼ä¸­çš„ VBUS å’Œ VBAT çŸ­è·¯ä¿æŠ¤åŠŸèƒ½
 *****************************************/
 void SC8815_SFB_Enable(void)
 {
-    //Çå³ý DIS_ShortFoldBack Î»
+    //æ¸…é™¤ DIS_ShortFoldBack ä½
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0xFB);
 }
 /****************************************
-* @brief    ¹Ø±Õ OTG ·´Ïò·ÅµçÄ£Ê½ÖÐµÄ VBUS ºÍ VBAT ¶ÌÂ·±£»¤¹¦ÄÜ
+* @brief    å…³é—­ OTG åå‘æ”¾ç”µæ¨¡å¼ä¸­çš„ VBUS å’Œ VBAT çŸ­è·¯ä¿æŠ¤åŠŸèƒ½
 *****************************************/
 void SC8815_SFB_Disable(void)
 {
-    //ÉèÖÃ DIS_ShortFoldBack Î»
+    //è®¾ç½® DIS_ShortFoldBack ä½
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) | 0x04);
 }
 /****************************************
-* @brief    ´ò¿ª OTG Ä£Ê½ÖÐÇáÔØÌõ¼þÏÂµÄ PFM Ä£Ê½
+* @brief    æ‰“å¼€ OTG æ¨¡å¼ä¸­è½»è½½æ¡ä»¶ä¸‹çš„ PFM æ¨¡å¼
 *****************************************/
 void SC8815_PFM_Enable(void)
 {
-    //ÉèÖÃ EN_PFM Î»
+    //è®¾ç½® EN_PFM ä½
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) | 0x01);
 }
 /****************************************
-* @brief    ¹Ø±Õ OTG Ä£Ê½ÖÐÇáÔØÌõ¼þÏÂµÄ PFM Ä£Ê½
+* @brief    å…³é—­ OTG æ¨¡å¼ä¸­è½»è½½æ¡ä»¶ä¸‹çš„ PFM æ¨¡å¼
 *****************************************/
 void SC8815_PFM_Disable(void)
 {
-    //Çå³ý EN_PFM Î»
+    //æ¸…é™¤ EN_PFM ä½
     I2C_WriteRegByte(SC8815_ADDR, SCREG_CTRL3_SET, I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0xFE);
 }
 
 /****************************************
-* @brief    ¼ì²é OTG ÊÇ·ñ´¦ÓÚ´ò¿ª×´Ì¬
-* @return   OTG ¹¦ÄÜµÄ×´Ì¬ (1b »ò 0b)
+* @brief    æ£€æŸ¥ OTG æ˜¯å¦å¤„äºŽæ‰“å¼€çŠ¶æ€
+* @return   OTG åŠŸèƒ½çš„çŠ¶æ€ (1b æˆ– 0b)
 *****************************************/
 uint8_t SC8815_OTG_IsEnable(void)
 {
-    //·µ»Ø OTG µÄ×´Ì¬
+    //è¿”å›ž OTG çš„çŠ¶æ€
     return (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) & 0x80) ? 1 : 0;
 }
 /****************************************
-* @brief    »ñÈ¡ VINREG µÄÔöÒæ
-* @return   VINREG µÄÔöÒæ (40 »ò 100)
+* @brief    èŽ·å– VINREG çš„å¢žç›Š
+* @return   VINREG çš„å¢žç›Š (40 æˆ– 100)
 *****************************************/
 uint8_t SC8815_VINREG_GetRatio(void)
 {
-    //·µ»Ø VINREG µÄÔöÒæ
+    //è¿”å›ž VINREG çš„å¢žç›Š
     return (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL0_SET) & 0x10) ? 40 : 100;
 }
 /****************************************
-* @brief    ¼ì²é OTG Ä£Ê½ÖÐ OVP(¹ýÑ¹±£»¤) ¹¦ÄÜÊÇ·ñ´¦ÓÚ´ò¿ª×´Ì¬
-* @return   OVP ¹¦ÄÜµÄ×´Ì¬ (1b »ò 0b)
+* @brief    æ£€æŸ¥ OTG æ¨¡å¼ä¸­ OVP(è¿‡åŽ‹ä¿æŠ¤) åŠŸèƒ½æ˜¯å¦å¤„äºŽæ‰“å¼€çŠ¶æ€
+* @return   OVP åŠŸèƒ½çš„çŠ¶æ€ (1b æˆ– 0b)
 *****************************************/
 uint8_t SC8815_OVP_IsEnable(void)
 {
-    //·µ»Ø OVP µÄ×´Ì¬
+    //è¿”å›ž OVP çš„çŠ¶æ€
     return (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL1_SET) & 0x04) ? 0 : 1;
 }
 /****************************************
-* @brief    ¼ì²é PGATE Òý½Å¹¦ÄÜÊÇ·ñ´¦ÓÚ´ò¿ª×´Ì¬
-* @return   PGATE Òý½Å¹¦ÄÜµÄ×´Ì¬ (1b »ò 0b)
+* @brief    æ£€æŸ¥ PGATE å¼•è„šåŠŸèƒ½æ˜¯å¦å¤„äºŽæ‰“å¼€çŠ¶æ€
+* @return   PGATE å¼•è„šåŠŸèƒ½çš„çŠ¶æ€ (1b æˆ– 0b)
 *****************************************/
 uint8_t SC8815_PGATE_IsEnable(void)
 {
-    //·µ»Ø PGATE µÄ×´Ì¬
+    //è¿”å›ž PGATE çš„çŠ¶æ€
     return (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0x80) ? 1 : 0;
 }
 /****************************************
-* @brief    ¼ì²é GPO Òý½Å¹¦ÄÜÊÇ·ñ´¦ÓÚ´ò¿ª×´Ì¬
-* @return   GPO Òý½Å¹¦ÄÜµÄ×´Ì¬ (1b »ò 0b)
+* @brief    æ£€æŸ¥ GPO å¼•è„šåŠŸèƒ½æ˜¯å¦å¤„äºŽæ‰“å¼€çŠ¶æ€
+* @return   GPO å¼•è„šåŠŸèƒ½çš„çŠ¶æ€ (1b æˆ– 0b)
 *****************************************/
 uint8_t SC8815_GPO_IsEnable(void)
 {
-    //·µ»Ø GPO µÄ×´Ì¬
+    //è¿”å›ž GPO çš„çŠ¶æ€
     return (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0x40) ? 1 : 0;
 }
 /****************************************
-* @brief    ¼ì²é ADC É¨ÃèÊÇ·ñ´¦ÓÚ´ò¿ª×´Ì¬
-* @return   ADC É¨ÃèµÄ×´Ì¬ (1b »ò 0b)
+* @brief    æ£€æŸ¥ ADC æ‰«ææ˜¯å¦å¤„äºŽæ‰“å¼€çŠ¶æ€
+* @return   ADC æ‰«æçš„çŠ¶æ€ (1b æˆ– 0b)
 *****************************************/
 uint8_t SC8815_ADC_IsEnable(void)
 {
-    //·µ»Ø ADC µÄ×´Ì¬
+    //è¿”å›ž ADC çš„çŠ¶æ€
     return (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0x20) ? 1 : 0;
 }
 /****************************************
-* @brief    ¼ì²é OTG Ä£Ê½ÖÐ ¶ÌÂ·±£»¤ ¹¦ÄÜÊÇ·ñ´¦ÓÚ´ò¿ª×´Ì¬
-* @return   ¶ÌÂ·±£»¤¹¦ÄÜµÄ×´Ì¬ (1b »ò 0b)
+* @brief    æ£€æŸ¥ OTG æ¨¡å¼ä¸­ çŸ­è·¯ä¿æŠ¤ åŠŸèƒ½æ˜¯å¦å¤„äºŽæ‰“å¼€çŠ¶æ€
+* @return   çŸ­è·¯ä¿æŠ¤åŠŸèƒ½çš„çŠ¶æ€ (1b æˆ– 0b)
 *****************************************/
 uint8_t SC8815_SFB_IsEnable(void)
 {
-    //·µ»Ø ¶ÌÂ·±£»¤¹¦ÄÜ µÄ×´Ì¬
+    //è¿”å›ž çŸ­è·¯ä¿æŠ¤åŠŸèƒ½ çš„çŠ¶æ€
     return (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0x04) ? 0 : 1;
 }
 /****************************************
-* @brief    ¼ì²é OTG Ä£Ê½ÖÐµÄ PFM Ä£Ê½ÊÇ·ñ´¦ÓÚ´ò¿ª×´Ì¬
-* @return   PFM Ä£Ê½µÄ×´Ì¬ (1b »ò 0b)
+* @brief    æ£€æŸ¥ OTG æ¨¡å¼ä¸­çš„ PFM æ¨¡å¼æ˜¯å¦å¤„äºŽæ‰“å¼€çŠ¶æ€
+* @return   PFM æ¨¡å¼çš„çŠ¶æ€ (1b æˆ– 0b)
 *****************************************/
 uint8_t SC8815_PFM_IsEnable(void)
 {
-    //·µ»Ø PFM µÄ×´Ì¬
+    //è¿”å›ž PFM çš„çŠ¶æ€
     return (I2C_ReadRegByte(SC8815_ADDR, SCREG_CTRL3_SET) & 0x01) ? 1 : 0;
 }
 
