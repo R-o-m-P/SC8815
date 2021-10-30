@@ -1,4 +1,4 @@
-## SC8815 General firmware library, which can realize all functions of SC8815.
+## SC8815 charger IC library, which can realize all functions of SC8815.
 The library is written in the style of the STM32 firmware library. It has passed the preliminary test and can successfully initialize the SC8815 and set the parameters, but the functions of all functions are not guaranteed.
 
 #### 1. The library will provide the following useful functions:
